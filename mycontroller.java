@@ -16,7 +16,6 @@ public class mycontroller {
 		int walls = 0;
 		boolean[] wallArr = new boolean[4];
 		int direction;
-		boolean chosen=false;
 		// Clockwise array from Ahead to Left
 		for (int i = 0; i<4; i++){
 			int look = robot.look(i+2000);
@@ -30,7 +29,6 @@ public class mycontroller {
 				wallArr[i] = true;
 			} else wallArr[i] = false;
 		}
-		int randno = (int) Math.round(Math.random()*(4-walls));
 		int[] possDirections = new int[4-walls];
 		int dirCount = 0;
 
@@ -51,22 +49,32 @@ public class mycontroller {
 	}
 
 	private String logDirection(int direction) {
-		return switch (direction) {
-			case IRobot.LEFT -> "left";
-			case IRobot.RIGHT -> "right";
-			case IRobot.BEHIND -> "backwards";
-			case IRobot.AHEAD -> "forward";
-			default -> "\b\b\b\b\b\boops  ";
-		};
-	}
+        switch (direction) {
+        case IRobot.LEFT:
+            return "left";
+        case IRobot.RIGHT:
+            return "right";
+        case IRobot.BEHIND:
+            return "backwards";
+        case IRobot.AHEAD:
+            return "forwards";
+        default:
+            return "\b\b\b\b\b\boops  ";
+        }
+    }
 
-	private String logSquareType(int walls) {
-		return switch(walls) {
-			case 0 -> "crossroads";
-			case 1 -> "junction";
-			case 2 -> "corridor";
-			case 3 -> "dead end";
-			default -> "?";
-		};
-	}
+    private String logSquareType(int walls) {
+        switch (walls) {
+        case 0:
+            return "crossroads";
+        case 1:
+            return "junction";
+        case 2:
+            return "corridor";
+        case 3:
+            return "dead end";
+        default:
+            return "?";
+        }
+    }
 }

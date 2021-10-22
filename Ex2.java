@@ -9,8 +9,6 @@
 
 import uk.ac.warwick.dcs.maze.logic.IRobot;
 
-import java.util.Arrays;
-
 /** @noinspection unused*/
 public class Ex2 {
 
