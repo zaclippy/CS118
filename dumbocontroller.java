@@ -42,12 +42,12 @@ public class dumbocontroller {
 	}
 
 	private String logDirection(int direction) {
-		return switch (direction) {
-			case IRobot.LEFT -> "left";
-			case IRobot.RIGHT -> "right";
-			case IRobot.BEHIND -> "backwards";
-			case IRobot.AHEAD -> "forwards";
-			default -> "\b\b\b\b\b\boops  ";
+		switch (direction) {
+			case IRobot.LEFT : return "left";
+			case IRobot.RIGHT : return "right";
+			case IRobot.BEHIND : return "backwards";
+			case IRobot.AHEAD : return "forwards";
+			default : return "\b\b\b\b\b\boops  ";
 		};
 	}
 }
