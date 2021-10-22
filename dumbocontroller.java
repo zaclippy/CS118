@@ -48,6 +48,6 @@ public class dumbocontroller {
 			case IRobot.BEHIND : return "backwards";
 			case IRobot.AHEAD : return "forwards";
 			default : return "\b\b\b\b\b\boops  ";
-		};
+		}
 	}
 }

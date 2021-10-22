@@ -44,22 +44,22 @@ public class Ex1 {
 	}
 
 	private String logDirection(int direction) {
-		return switch (direction) {
-			case IRobot.LEFT -> "left";
-			case IRobot.RIGHT -> "right";
-			case IRobot.BEHIND -> "backwards";
-			case IRobot.AHEAD -> "forwards";
-			default -> "\b\b\b\b\b\boops  ";
-		};
+		switch (direction) {
+			case IRobot.LEFT : return "left";
+			case IRobot.RIGHT : return "right";
+			case IRobot.BEHIND : return "backwards";
+			case IRobot.AHEAD : return "forwards";
+			default : return "\b\b\b\b\b\boops  ";
+		}
 	}
 
 	private String logSquareType(int walls) {
-		return switch(walls) {
-			case 0 -> "at a crossroads";
-			case 1 -> "at a junction";
-			case 2 -> "down a corridor";
-			case 3 -> "at a dead end";
-			default -> "?";
-		};
+		switch(walls) {
+			case 0 : return "crossroads";
+			case 1 : return "junction";
+			case 2 : return "corridor";
+			case 3 : return "dead end";
+			default : return "?";
+		}
 	}
 }
