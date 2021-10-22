@@ -1,47 +1,46 @@
 /*
-*  PREAMBLE
+* File: dumbocontroller.java
+* Created: 17 September 2002, 00:34
+* Author: Stephen Jarvis
 */
 
 // javac -classpath maze-environment.jar dumbocontroller.java
 // java -jar maze-environment.jar &
 
 import uk.ac.warwick.dcs.maze.logic.IRobot;
-import java.util.Arrays;
 
 /** @noinspection unused*/
 public class Ex1 {
 
 	public void controlRobot(IRobot robot) {
 		int walls = 0;
-		boolean[] wallArr = new boolean[4];
-		int direction;
-		// Clockwise array from Ahead to Left
+		// Get a random direction
+		int direction = randomDirection();
+
+		// If direction is towards a wall, keep choosing new direction until not
+		while (robot.look(direction) == IRobot.WALL) {
+			direction = randomDirection();
+		}
+
 		for (int i = 0; i<4; i++){
-			// The first if statement forces movement in undiscovered direction.
 			if (robot.look(i+2000) == IRobot.WALL) {
 				walls += 1;
-				wallArr[i] = true;
-			} else wallArr[i] = false;
-		}
-
-		int randno = (int) Math.round(Math.random()*(4-walls));
-		int[] possDirections = new int[4-walls];
-		int dirCount = 0;
-
-		// Add all the directions without a wall to 'possible 	directions' array
-		for (int i = 0; i<4; i++){
-			if (wallArr[i] == false) {
-				possDirections[dirCount] = 2000+i;
-				dirCount+=1;
 			}
 		}
-		System.out.println("Poss directions: " + Arrays.toString(possDirections));
-		direction = possDirections[(int)Math.floor(Math.random()*dirCount)];
 
 		// Move
 		robot.face(direction);
-		System.out.println("I'm going " + logDirection(direction) + " at " + logSquareType(walls));
+		System.out.println("I'm going " + logDirection(direction) + " " + logSquareType(walls));
+	}
 
+	private int randomDirection() {
+		// Select random number 0->3
+		int randno = (int) Math.round(Math.random()*3);
+		// Return a direction from the random number above:
+		if (randno == 0) return IRobot.LEFT;
+		else if (randno == 1) return IRobot.RIGHT;
+		else if (randno == 2) return IRobot.BEHIND;
+		else return IRobot.AHEAD;
 	}
 
 	private String logDirection(int direction) {
@@ -56,10 +55,10 @@ public class Ex1 {
 
 	private String logSquareType(int walls) {
 		return switch(walls) {
-			case 0 -> "crossroads";
-			case 1 -> "junction";
-			case 2 -> "corridor";
-			case 3 -> "dead end";
+			case 0 -> "at a crossroads";
+			case 1 -> "at a junction";
+			case 2 -> "down a corridor";
+			case 3 -> "at a dead end";
 			default -> "?";
 		};
 	}

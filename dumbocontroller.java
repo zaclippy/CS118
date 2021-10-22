@@ -20,13 +20,11 @@ public class dumbocontroller {
 		// If direction is towards a wall, keep choosing new direction until not
 		while (robot.look(direction) == IRobot.WALL) {
 			direction = randomDirection();
-//			System.out.println("WALL!");
 		}
 
 		// Move
 		robot.face(direction);
 		System.out.println("moving " + logDirection(direction));
-
 	}
 
 	private int randomDirection() {

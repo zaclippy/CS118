@@ -23,7 +23,7 @@ public class Ex2 {
 		if (robot.look(IRobot.AHEAD) != IRobot.WALL && random8 != 1) {
 			direction = IRobot.AHEAD;
 		} else {
-			for (int i = 1; i<4; i++){
+			for (int i = 0; i<4; i++){
 				// The first if statement forces movement in undiscovered direction.
 				if (robot.look(i+2000) == IRobot.WALL) {
 					walls += 1;
