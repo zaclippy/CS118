@@ -14,13 +14,12 @@ public class Ex1 {
 
 	public void controlRobot(IRobot robot) {
 		int walls = 0;
-		// Get a random direction
-		int direction = randomDirection();
+		int direction;
 
 		// If direction is towards a wall, keep choosing new direction until not
-		while (robot.look(direction) == IRobot.WALL) {
+		do {
 			direction = randomDirection();
-		}
+		} while (robot.look(direction) == IRobot.WALL);
 
 		for (int i = 0; i<4; i++){
 			if (robot.look(i+2000) == IRobot.WALL) {
