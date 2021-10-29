@@ -1,10 +1,10 @@
 /*
-* To avoid collisions, the robot looks around at all 4 surrounding squares first.
-* It chooses a random direction from the adjacent squares which are not walls.
-* This is to avoid having to keep choosing a random direction until it is not a wall. Only one random number has to be generated.
+* Here the robot carries on going straight until it is in front of a wall, and then it chooses a random directon from all those directions which are not a wall.
+* but this means it will sometimes move between two dead ends forever, so there is a 1/8 chance of choosing a random direction instead of just going forward every time.
+* This is implemented by choosing a random integer from 0 to 7 each time and if that number is 1 (1/8 chance of this) then it follows the else statement instead and chooses a random direction/
 */
 
-// javac -classpath maze-environment.jar dumbocontroller.java
+// javac -classpath maze-environment.jar Ex2.java
 // java -jar maze-environment.jar &
 
 import uk.ac.warwick.dcs.maze.logic.IRobot;
