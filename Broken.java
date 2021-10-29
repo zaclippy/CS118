@@ -4,6 +4,9 @@
  * Author:  Stephen Jarvis
  */
 
+// javac -classpath maze-environment.jar Broken.java
+// java -jar maze-environment.jar &
+
 import uk.ac.warwick.dcs.maze.logic.IRobot;
 
 public class Broken {
@@ -12,6 +15,22 @@ public class Broken {
 
         int direction;
         int randno;
+        
+        switch (isTargetNorth(robot)) {
+            case 1: System.out.print("Target is north");
+            break;
+            case -1: System.out.print("Target is south");
+            break;
+            default: System.out.print("Target is ");
+        }
+        switch (isTargetEast(robot)) {
+            case 1: System.out.println("east");
+            break;
+            case -1: System.out.println("west");
+            break;
+            default: System.out.println("");
+        }
+
 
         do {
             randno = (int) Math.round(Math.random() * 3);
@@ -29,17 +48,31 @@ public class Broken {
         robot.face(direction);  /* Face the direction */
 
     }
-    // The coordinates begin (1,1) at the top left-hand corner of the maze
-    // and increase to (n,n) at the bottom right-hand corner (default 15x15).
-
-    // return 1 for yes, -1 for no, 0 for same latitude
+    
     private byte isTargetNorth(IRobot robot) {
-        if(robot.getTargetLocation().y > robot.getLocation().y) {
-            return 1;
-        } else if (robot.getTargetLocation().y < robot.getLocation().y) {
-            return -1;
+        if(robot.getTargetLocation().y < robot.getLocation().y) {
+            return 1; // yes
+        } else if (robot.getTargetLocation().y > robot.getLocation().y) {
+            return -1; // no
         } else {
-            return 0;
+            return 0; // same y coordinate
         }
+    }
+
+    private byte isTargetEast(IRobot robot) {
+        if (robot.getTargetLocation().x > robot.getLocation().x) {
+            return 1; // yes
+        } else if (robot.getTargetLocation().x < robot.getLocation().x) {
+            return -1; // no
+        } else {
+            return 0; // same x coordinate
+        }
+    }
+
+    private int lookHeading(int direction, IRobot robot) {
+        // set heading to north:
+        robot.setHeading(IRobot.NORTH);
+        // LOOK RIGHT FOR EAST etc.
+        robot.look(direction);
     }
 }

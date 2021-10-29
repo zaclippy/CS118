@@ -2,5 +2,6 @@
     "java.project.referencedLibraries": [
         "lib/**/*.jar",
         "maze-environment.jar"
-    ]
+    ],
+    "java.dependency.packagePresentation": "flat"
 }
