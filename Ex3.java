@@ -9,9 +9,10 @@
  */
 
 import uk.ac.warwick.dcs.maze.logic.IRobot;
+
 import java.util.ArrayList;
 
-public class Broken {
+public class Ex3 {
     // Main method to control the robot. Sets the robot to head in the direction chosen by the heading controller and moves ahead.
     public void controlRobot(IRobot robot) {
         int heading = headingController(robot);
