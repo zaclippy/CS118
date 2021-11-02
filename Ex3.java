@@ -3,9 +3,12 @@
  * Created: 3 November 2021
  * Author:  Zachary Lipshaw
  *
- * The robot does not always reach the target.
+ * The robot does not always reach the target. However, it will always move in a direction which brings it closer to the target.
  * If possible, it moves in any direction which brings it closer to the target, as long as this direction doesn't lead it into a wall
  * and if there are two such directions, or no such direction then it should choose out of the available directions at random.
+ * The robot would be improved if only homed towards the target once a junction was reached, since now it just moves back and forth in some corridors to try to move closer to the target.
+ * I have done the final heading controller by making arrays with the directions towards the target (which should always be two) and the possible directions the robot can move in without hitting a wall (can be 1-4 of these)
+ * This makes it easier to compare them and choose a random direction from the elements that match by looping through the two arrays.
  */
 
 import uk.ac.warwick.dcs.maze.logic.IRobot;
