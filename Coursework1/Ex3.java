@@ -1,8 +1,4 @@
 /*
- * File:    Broken	.java
- * Created: 3 November 2021
- * Author:  Zachary Lipshaw
- *
  * The robot does not always reach the target. However, it will always move in a direction which brings it closer to the target.
  * If possible, it moves in any direction which brings it closer to the target, as long as this direction doesn't lead it into a wall
  * and if there are two such directions, or no such direction then it should choose out of the available directions at random.

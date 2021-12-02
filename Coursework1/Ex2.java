@@ -22,7 +22,7 @@ public class Ex2 {
 			direction = IRobot.AHEAD;
 		} else {
 			for (int i = 0; i<4; i++){
-				// The first if statement forces movement in undiscovered direction.
+				// Count how many directions are walls with the walls variable, and add to the wall array
 				if (robot.look(i+2000) == IRobot.WALL) {
 					walls += 1;
 					wallArr[i] = true;
@@ -39,7 +39,7 @@ public class Ex2 {
 					dirCount+=1;
 				}
 			}
-			// Choose one of the possible directions at random. not rounded since rounding gives uneven probability. By converting from float to an integer it gives equal probability of every direction.
+			// Choose one of the possible directions at random. not rounded since rounding gives uneven probability. By casting from float to an integer it gives equal probability of every direction.
 			direction = possDirections[(int) (Math.random() * dirCount)];
 		}
 		// Move

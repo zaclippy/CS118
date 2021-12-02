@@ -1,5 +1,5 @@
 /*
-* This robot avoids hitting a wall by choosing a direction at random, then looks in that direction and keeps on choosing until there is no wall in that direction.
+* This robot avoids hitting a wall by choosing a direction at random, then looks in that direction and keeps on choosing until there is no wall in that direction, using a do-while loop to avoid the extra two lines of code.
 * It then looks in all directions finding out how many walls there are, and prints out which direction the robot is going in as well as whether it is a dead-end, corridor, junction or crossroads from the number of walls
 * Then it moves in the chosen random direction.
 */
