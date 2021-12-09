@@ -7,12 +7,13 @@
 
 import uk.ac.warwick.dcs.maze.logic.IRobot;
 
+import java.util.ListIterator;
 import java.util.Stack;
 
-public class Explorer {
+public class Explorer1 {
     private int explorerMode = 1;  // 1 = explore, 0 = backtrack
     private int pollRun = 0;     // Incremented after each pass
-    private RobotData robotData; // Data store for junctions
+    private RobotData1 robotData; // Data store for junctions
 
     public void controlRobot(IRobot robot) {
         // maximum number of steps
@@ -21,7 +22,7 @@ public class Explorer {
         }
         // On the first move of the first run of a g new maze
         if ((robot.getRuns() == 0) && (pollRun == 0)) {
-            robotData = new RobotData(); //reset the data store
+            robotData = new RobotData1(); //reset the data store
         } if (pollRun == 0) explorerMode = 1;
         if (explorerMode == 1) exploreControl(robot);
         else backtrackControl(robot);
@@ -49,7 +50,7 @@ public class Explorer {
         if (exits > 2 /* i.e. junction or crossroads */) {
             if (passageExits(robot) == 0) {
                 // exit opposite way to which it first entered the junction
-                int originalDir = robotData.searchJunction();
+                int originalDir = robotData.searchJunction(robot.getLocation().x, robot.getLocation().y); // temporary direction
                 if (originalDir >= IRobot.SOUTH)
                     robot.setHeading(originalDir - 2); // anticlockwise round compass (done this way to make it more concise rather than going through all the compass directions)
                 else
@@ -94,7 +95,7 @@ public class Explorer {
         } else {
             if (beenbeforeExits(robot) <= 1) /* if new junction */ {
                 // store the data
-                robotData.recordHeading(robot.getHeading());
+                robotData.recordJunction(robot.getLocation().x, robot.getLocation().y, robot.getHeading());
             }
             int[] passages = new int[passageExits];
             short i = 0;
@@ -137,32 +138,45 @@ public class Explorer {
     }
 }
 
-class RobotData {
+class RobotData1 {
+    Stack<Integer> juncX = new Stack<>(); // x coordinates of the junctions
+    Stack<Integer> juncY = new Stack<>();  // y coordinates of the junction
     Stack<Integer> arrived = new Stack<>(); // heading the robot first appeared from
 
-    // coordinates no longer need to be stored, just the heading.
-    public void recordHeading(int heading) {
+    public void recordJunction(int x, int y, int heading) {
+        juncX.push(x); // store the x coordinate
+        juncY.push(y); // store the y coordinate
         arrived.push(heading); // store the heading
-        printLastJunctionHeading();
+        printLastJunction();
     }
 
-    // take the most recent junction
-    public int searchJunction() {
-        // can be done with just popping it, since we have just backtracked to the most recent junction we don't need to search for it
-        return arrived.pop();
+    // get the direction the robot was traveling when it originally found this junction
+    public int searchJunction(int x, int y) {
+        // iterates from the top
+        ListIterator<Integer> ListIterator = juncX.listIterator(juncX.size());
+        while (ListIterator.hasPrevious()){
+            // if the x's are equal at this index and the y's are equal, then return the heading from the arrived stack
+            if (ListIterator.previous() == x && juncY.get(ListIterator.previousIndex()) == y) {
+                System.out.println(ListIterator.previous() + " and x = " + x);
+                return arrived.get(ListIterator.previousIndex());
+            }
+        }
+        return -1;
     }
 
-    public void printLastJunctionHeading() {
+    public void printLastJunction() {
         // replace heading with words
         String heading;
         if (arrived.peek() == IRobot.NORTH) heading = "NORTH";
         else if (arrived.peek() == IRobot.EAST) heading = "EAST";
         else if (arrived.peek() == IRobot.SOUTH) heading = "SOUTH";
         else heading = "WEST";
-        System.out.println("Junction " + arrived.size() + " original heading: " + heading);
+        System.out.println("Junction " + juncX.size() + " (x=" + juncX.peek() + ",y=" + juncY.peek() + ") original heading: " + heading);
     }
 
     public void resetJunctionCounter() {
-        arrived.clear();
+        juncX.empty();
+        juncY.empty();
+        arrived.empty();
     }
 }
