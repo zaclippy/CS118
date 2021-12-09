@@ -1,42 +1,72 @@
-// For Cw2 Ex1
-
 /*
-* The robot should never reverse direction, except at dead ends.
-* At corners it should turn left or right so as to avoid collisions.
-* At junctions it should, if possible, turn so as to move into a square that it has not previously been explored, choosing randomly if there are more than one. If this is not possible it should randomly choose a direction that doesn’t cause a collision.
-* Similar behaviour to junctions should be exhibited at crossroads: the robot should select an unexplored exit if possible, selecting randomly between the exits if more than one is possible. If there are no unexplored exits then the robot should randomly choose a direction that doesn’t cause a collision.
+*
  */
+
+// javac -classpath maze-environment.jar Explorer.java
+// java -jar maze-environment.jar &
 
 import uk.ac.warwick.dcs.maze.logic.IRobot;
 
-import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Stack;
 
 public class Explorer {
-
+    private int explorerMode = 1;  // 1 = explore, 0 = backtrack
     private int pollRun = 0;     // Incremented after each pass
     private RobotData robotData; // Data store for junctions
+
     public void controlRobot(IRobot robot) {
-        // On the first move of the first run of a new maze
-        if ((robot.getRuns() == 0) && (pollRun == 0))
+        // maximum number of steps
+        if (pollRun > 5000) {
+            reset();
+        }
+        // On the first move of the first run of a g new maze
+        if ((robot.getRuns() == 0) && (pollRun == 0)) {
             robotData = new RobotData(); //reset the data store
-        System.out.println(robot.getLocation());
+        } if (pollRun == 0) explorerMode = 1;
+        if (explorerMode == 1) exploreControl(robot);
+        else backtrackControl(robot);
+        pollRun++; // Increment pollRun so that the data is not reset each time the robot moves
+    }
+
+    private void exploreControl(IRobot robot) {
         int exits = nonWallExits(robot);
         int direction;
-        if (exits == 2) {
-            direction = corridor(robot);
-        } else if (exits == 3) {
-            // Add the junction to the junctionCounter elements
-            robotData.recordJunction(robot.getLocation().x, robot.getLocation().y, robot.getHeading());
-            direction = junction(robot);
-        } else if (exits == 4) {
-            // Add the crossroads (junction and crossroads are basically the same) to the junctionCounter elements
-            robotData.recordJunction(robot.getLocation().x, robot.getLocation().y, robot.getHeading());
-            direction = crossroads(robot);
-        } else {
+        if (exits == 1) {
             direction = deadEnd(robot);
+            if (pollRun != 0) explorerMode = 0; // sets to backtrack mode UNLESS ITS THE FIRST ONE
+        } else if (exits == 2) {
+            direction = corridor(robot);
+        } else  /* (either will be a junction or a crossroads) */ {
+            direction = junction(robot, exits);
         }
         robot.face(direction);
-        pollRun++; // Increment pollRun so that the data is not reset each time the robot moves
+    }
+
+    private void backtrackControl(IRobot robot) {
+        // calculate no of non wall exits in relation to the robot position
+        int exits = nonWallExits(robot);
+        int direction = 1000;
+        if (exits > 2 /* i.e. junction or crossroads */) {
+            if (passageExits(robot) == 0) {
+                // exit opposite way to which it first entered the junction
+                int originalDir = robotData.searchJunction(robot.getLocation().x, robot.getLocation().y); // temporary direction
+                if (originalDir >= IRobot.SOUTH)
+                    robot.setHeading(originalDir - 2); // anticlockwise round compass (done this way to make it more concise rather than going through all the compass directions)
+                else
+                    robot.setHeading(originalDir + 2); // clockwise
+                direction = IRobot.AHEAD;
+            } else {
+                // there are passage exits so switch back to explorer mode and pick a random one
+                direction = junction(robot, exits); /* The junction method will choose a random passage direction in this case. */
+                explorerMode = 1;
+            }
+        } else if (exits == 2) {/* Corridor */
+            direction = corridor(robot);
+        } else direction = deadEnd(robot);
+        robot.face(direction);
     }
 
     private int deadEnd(IRobot robot) {
@@ -49,7 +79,6 @@ public class Explorer {
         return dir;
     }
 
-
     private int corridor(IRobot robot) {
         // do not crash into walls and do not rseverse direction and go back on itself
         // only one direction out of ahead, left and right ever satisfies these criteria, so go to whichever one is not a wall.
@@ -60,30 +89,16 @@ public class Explorer {
         } else return IRobot.RIGHT;
     }
 
-    private int junction(IRobot robot) {
+    // FOR JUNCTIONS AND CROSSROADS:
+    private int junction(IRobot robot, int exits /* number of exits */) {
         int passageExits = passageExits(robot);
         if (passageExits == 0) {
-            return 2000 + (int) (Math.random() * 3);
+            return 2000 + (int) (Math.random() * exits);
         } else {
-            int[] passages = new int[passageExits];
-            short i = 0;
-            for (int direction = IRobot.AHEAD; direction <= IRobot.LEFT; direction++)
-                if (robot.look(direction) == IRobot.PASSAGE) {
-                    passages[i] = direction;
-                    i++;
-                }
-            return passages[(int) (Math.random() * passageExits)];
-        }
-    }
-
-
-    private int crossroads(IRobot robot) {
-        // If there is one+ passage exit, the controller will choose one of the passages randomly
-        // if there are no passage exits then the controller will choose randomly between all of the non wall directions.
-        int passageExits = passageExits(robot);
-        if (passageExits == 0) {
-            return 2000 + (int) (Math.random() * 4);
-        } else {
+            if (beenbeforeExits(robot) <= 1) /* if new junction */ {
+                // store the data
+                robotData.recordJunction(robot.getLocation().x, robot.getLocation().y, robot.getHeading());
+            }
             int[] passages = new int[passageExits];
             short i = 0;
             for (int direction = IRobot.AHEAD; direction <= IRobot.LEFT; direction++)
@@ -123,23 +138,38 @@ public class Explorer {
     public void reset() {
         robotData.resetJunctionCounter();
     }
-
 }
 
 class RobotData {
-    private static int maxJunctions =  10000; // Max number likely to occur
-    private static int junctionCounter; // No. of junctions for which information has been recorded - i.e. the i for the arrays of the elements.
-    private int[] juncX = new int[maxJunctions]; // x coordinates of the junctions
-    private int[] juncY = new int[maxJunctions]; // y coordinates of the junction
-    private int[] arrived; // heading the robot first appeared from
+    Stack<List<Integer>> juncXY = new Stack<>(); // x coordinates of the junctions
+    Stack<Integer> arrived = new Stack<>(); // heading the robot first appeared from
 
     public void recordJunction(int x, int y, int heading) {
-        juncX[junctionCounter] = x; // store the x coordinate
-        juncY[junctionCounter] = y; // store the y coordinate
-        junctionCounter++; // increment the counter
+        List<Integer> coords = Arrays.asList(x, y, heading);
+        juncXY.push(coords); // store the x and y coordinates
+        printLastJunction();
+    }
+
+    // take the most recent junction
+    public int searchJunction(int x, int y) {
+        // can be done with just popping it, since we have just backtracked to the most recent junction we don't need to search for it
+        juncXY.pop();
+        return arrived.pop();
+    }
+
+    public void printLastJunction() {
+        // replace heading with words
+        String heading;
+        int arrived;
+        if (arrived.peek() == IRobot.NORTH) heading = "NORTH";
+        else if (arrived.peek() == IRobot.EAST) heading = "EAST";
+        else if (arrived.peek() == IRobot.SOUTH) heading = "SOUTH";
+        else heading = "WEST";
+        System.out.println("Junction " + juncXY.size() + " (x,y =" + juncXY.peek() + ") original heading: " + heading);
     }
 
     public void resetJunctionCounter() {
-        junctionCounter = 0;
+        juncXY.clear();
+        arrived.clear();
     }
 }
