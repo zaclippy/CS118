@@ -1,4 +1,4 @@
-/*
+package Coursework1;/*
  * The robot does not always reach the target. However, it will always move in a direction which brings it closer to the target.
  * If possible, it moves in any direction which brings it closer to the target, as long as this direction doesn't lead it into a wall
  * and if there are two such directions, or no such direction then it should choose out of the available directions at random.
@@ -11,7 +11,7 @@ import uk.ac.warwick.dcs.maze.logic.IRobot;
 
 import java.util.ArrayList;
 
-public class Ex3 {
+public class C1Ex3 {
     // Main method to control the robot. Sets the robot to head in the direction chosen by the heading controller and moves ahead.
     public void controlRobot(IRobot robot) {
         int heading = headingController(robot);

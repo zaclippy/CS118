@@ -2,15 +2,16 @@
 *
  */
 
-// javac -classpath maze-environment.jar Explorer.java
+// javac -classpath maze-environment.jar Ex2.java
 // java -jar maze-environment.jar &
 
 import uk.ac.warwick.dcs.maze.logic.IRobot;
 
+import java.util.HashMap;
 import java.util.ListIterator;
 import java.util.Stack;
 
-public class Explorer1 {
+public class Ex1 {
     private int explorerMode = 1;  // 1 = explore, 0 = backtrack
     private int pollRun = 0;     // Incremented after each pass
     private RobotData1 robotData; // Data store for junctions
@@ -139,44 +140,40 @@ public class Explorer1 {
 }
 
 class RobotData1 {
-    Stack<Integer> juncX = new Stack<>(); // x coordinates of the junctions
-    Stack<Integer> juncY = new Stack<>();  // y coordinates of the junction
-    Stack<Integer> arrived = new Stack<>(); // heading the robot first appeared from
+    int[] juncX = new int[10000];
+    int[] juncY = new int[10000];
+    private int[] arrived = new int [10000]; // heading the robot first appeared from
+    int junctionCounter = 0;
 
     public void recordJunction(int x, int y, int heading) {
-        juncX.push(x); // store the x coordinate
-        juncY.push(y); // store the y coordinate
-        arrived.push(heading); // store the heading
-        printLastJunction();
+        juncX[junctionCounter] = x; // store the x coordinate
+        juncY[junctionCounter] = y; // store the y coordinate
+        arrived[junctionCounter] = heading;
+        junctionCounter++; // increment the counter
+    }
+
+    public void resetJunctionCounter() {
+        junctionCounter = 0;
     }
 
     // get the direction the robot was traveling when it originally found this junction
     public int searchJunction(int x, int y) {
-        // iterates from the top
-        ListIterator<Integer> ListIterator = juncX.listIterator(juncX.size());
-        while (ListIterator.hasPrevious()){
-            // if the x's are equal at this index and the y's are equal, then return the heading from the arrived stack
-            if (ListIterator.previous() == x && juncY.get(ListIterator.previousIndex()) == y) {
-                System.out.println(ListIterator.previous() + " and x = " + x);
-                return arrived.get(ListIterator.previousIndex());
+        // iterates from the most recent one to save time.
+        for (int i = junctionCounter; i>=0; i--) {
+            if (juncX[i] == x && juncY[i] == y) {
+                return arrived[i];
             }
         }
-        return -1;
+        return -1; // just for compiler - in reality a heading from the arrived[] array will be returned.
     }
 
     public void printLastJunction() {
         // replace heading with words
         String heading;
-        if (arrived.peek() == IRobot.NORTH) heading = "NORTH";
-        else if (arrived.peek() == IRobot.EAST) heading = "EAST";
-        else if (arrived.peek() == IRobot.SOUTH) heading = "SOUTH";
+        if (arrived[junctionCounter] == IRobot.NORTH) heading = "NORTH";
+        else if (arrived[junctionCounter] == IRobot.EAST) heading = "EAST";
+        else if (arrived[junctionCounter] == IRobot.SOUTH) heading = "SOUTH";
         else heading = "WEST";
-        System.out.println("Junction " + juncX.size() + " (x=" + juncX.peek() + ",y=" + juncY.peek() + ") original heading: " + heading);
-    }
-
-    public void resetJunctionCounter() {
-        juncX.empty();
-        juncY.empty();
-        arrived.empty();
+        System.out.println("Junction " + junctionCounter + " (x=" + juncX[junctionCounter] + ",y=" + juncY[junctionCounter] + ") original heading: " + heading);
     }
 }

@@ -2,17 +2,17 @@
 *
  */
 
-// javac -classpath maze-environment.jar Explorer.java
+// javac -classpath maze-environment.jar Ex2.java
 // java -jar maze-environment.jar &
 
 import uk.ac.warwick.dcs.maze.logic.IRobot;
 
 import java.util.Stack;
 
-public class Explorer {
+public class Ex2 {
     private int explorerMode = 1;  // 1 = explore, 0 = backtrack
     private int pollRun = 0;     // Incremented after each pass
-    private RobotData robotData; // Data store for junctions
+    private RobotData2 robotData; // Data store for junctions
 
     public void controlRobot(IRobot robot) {
         // maximum number of steps
@@ -21,7 +21,7 @@ public class Explorer {
         }
         // On the first move of the first run of a g new maze
         if ((robot.getRuns() == 0) && (pollRun == 0)) {
-            robotData = new RobotData(); //reset the data store
+            robotData = new RobotData2(); //reset the data store
         } if (pollRun == 0) explorerMode = 1;
         if (explorerMode == 1) exploreControl(robot);
         else backtrackControl(robot);
@@ -54,6 +54,7 @@ public class Explorer {
                     robot.setHeading(originalDir - 2); // anticlockwise round compass (done this way to make it more concise rather than going through all the compass directions)
                 else
                     robot.setHeading(originalDir + 2); // clockwise
+                System.out.println("backtracking " + RobotData2.directionToString(robot.getHeading()));
                 direction = IRobot.AHEAD;
             } else {
                 // there are passage exits so switch back to explorer mode and pick a random one
@@ -77,7 +78,7 @@ public class Explorer {
     }
 
     private int corridor(IRobot robot) {
-        // do not crash into walls and do not rseverse direction and go back on itself
+        // do not crash into walls and do not reverse direction and go back on itself
         // only one direction out of ahead, left and right ever satisfies these criteria, so go to whichever one is not a wall.
         if (robot.look(IRobot.AHEAD) != IRobot.WALL) {
             return IRobot.AHEAD;
@@ -137,7 +138,7 @@ public class Explorer {
     }
 }
 
-class RobotData {
+class RobotData2 {
     Stack<Integer> arrived = new Stack<>(); // heading the robot first appeared from
 
     // coordinates no longer need to be stored, just the heading.
@@ -149,17 +150,21 @@ class RobotData {
     // take the most recent junction
     public int searchJunction() {
         // can be done with just popping it, since we have just backtracked to the most recent junction we don't need to search for it
+        System.out.print("From junction " + arrived.size());
         return arrived.pop();
     }
 
     public void printLastJunctionHeading() {
         // replace heading with words
-        String heading;
-        if (arrived.peek() == IRobot.NORTH) heading = "NORTH";
-        else if (arrived.peek() == IRobot.EAST) heading = "EAST";
-        else if (arrived.peek() == IRobot.SOUTH) heading = "SOUTH";
-        else heading = "WEST";
+        String heading = directionToString(arrived.peek());
         System.out.println("Junction " + arrived.size() + " original heading: " + heading);
+    }
+
+    public static String directionToString(int direction) {
+        if (direction == IRobot.NORTH) return "NORTH";
+        else if (direction == IRobot.EAST) return "EAST";
+        else if (direction == IRobot.SOUTH) return "SOUTH";
+        else return "WEST";
     }
 
     public void resetJunctionCounter() {

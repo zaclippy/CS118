@@ -1,4 +1,4 @@
-/*
+package Coursework1;/*
 * Here the robot carries on going straight until it is in front of a wall, and then it chooses a random directon from all those directions which are not a wall.
 * but this means it will sometimes move between two dead ends forever, so there is a 1/8 chance of choosing a random direction instead of just going forward every time.
 * This is implemented by choosing a random integer from 0 to 7 each time and if that number is 1 (1/8 chance of this) then it follows the else statement instead and chooses a random direction
@@ -10,7 +10,7 @@
 import uk.ac.warwick.dcs.maze.logic.IRobot;
 
 /** @noinspection unused*/
-public class Ex2 {
+public class C1Ex2 {
 
 	public void controlRobot(IRobot robot) {
 		int walls = 0; // to store the number of walls
